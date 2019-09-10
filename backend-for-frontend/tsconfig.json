@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "module": "commonjs",
+    "declaration": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "target": "esnext"
+  }
+}
