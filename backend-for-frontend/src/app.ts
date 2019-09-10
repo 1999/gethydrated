@@ -22,7 +22,8 @@ const renderEmptyHTML: RequestHandler = async (_, res) => {
 };
 
 const proxyServiceWorker: RequestHandler = (_, res) => {
-  stream(`${config.static.host}/assets/build.service-worker.js`, {
+  // TODO use process.env
+  stream(`http://frontend/assets/build.service-worker.js`, {
     headers: {
       'user-agent': `${appName}/${appVersion} (proxying service worker request)`,
     },
