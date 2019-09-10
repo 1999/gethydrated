@@ -1,0 +1,28 @@
+version: "3.7"
+services:
+  frontend:
+    image: node:12-alpine
+    ports:
+     - "8081:8080"
+    volumes:
+     - ./frontend:/var/service
+     - ./tsconfig.json:/var/tsconfig.json
+    working_dir: /var/service
+    command: npm run dev
+    depends_on:
+      - bff
+  bff:
+    image: node:12-alpine
+    ports:
+     - "8080:8080"
+    volumes:
+     - ./backend-for-frontend:/var/service
+     - ./tsconfig.json:/var/tsconfig.json
+    working_dir: /var/service
+    command: npm run dev
+  db:
+    image: postgres:12-alpine
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+volumes:
+  db-data:

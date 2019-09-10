@@ -5,7 +5,7 @@
   "description": "Gethydrated frontend",
   "scripts": {
     "build": "webpack --config build/webpack.config.js",
-    "dev": "npm run build -- --watch & http-server -p 8081 --cors dist/",
+    "dev": "npm run build -- --watch & http-server -p 8080 --cors dist/",
     "lint": "eslint -c .eslintrc.js --ext .ts src/",
     "storybook": "start-storybook -c src/.storybook",
     "test": "mocha --require ts-node/register src/**/*.spec.ts"
