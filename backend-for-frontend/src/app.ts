@@ -41,6 +41,6 @@ app.get('/copy/:id', renderEmptyHTML);
 app.get('/service-worker.js', proxyServiceWorker);
 app.get('/manifest.json', renderPWAManifest);
 
-app.listen(config.port, () => {
-  logger.info(`App is listening to incoming connections on port ${config.port}`);
+app.listen(80, () => {
+  logger.info('App is listening to incoming connections on port 80');
 });
