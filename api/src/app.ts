@@ -5,13 +5,14 @@ import cors from 'cors';
 import { Sequelize, default as SequalizeBase } from 'sequelize';
 
 const logger = pino();
-const dbLogger = logger.child({ module: 'orm' });
-const sequelize = new Sequelize('postgres://postgres:postgres@db:5432/cards', { logging: dbLogger.debug });
+// const dbLogger = logger.child({ module: 'orm' });
+const sequelize = new Sequelize('postgres://postgres:postgres@db:5432/cards');
 const app = express();
 
 
 async function main() {
   class Card extends SequalizeBase.Model {}
+
   Card.init({
     card_id: SequalizeBase.STRING,
     revision: SequalizeBase.STRING,
@@ -23,13 +24,15 @@ async function main() {
   }, {
     sequelize,
     tableName: 'cards',
+    freezeTableName: true,
     indexes: [
       {
         unique: true,
-        fields: ['id', 'revision'],
+        fields: ['card_id', 'revision'],
       },
     ],
   });
+  Card.removeAttribute('id');
 
   await sequelize.sync();
 
@@ -37,8 +40,7 @@ async function main() {
 
   app.post('/sync', jsonBodyParser({ limit: '4Mb' }), async (req, res) => {
     for (const card of req.body.cards) {
-      const res = await Card.create({
-        // id: 18, TODO
+      await Card.create({
         card_id: card.id,
         revision: card.revision,
         prev_revision: '', // TODO
@@ -47,8 +49,6 @@ async function main() {
         title: card.title,
         data: card, // TODO
       });
-
-      console.log(res);
     }
 
     res.json({ foo: 'bar' });

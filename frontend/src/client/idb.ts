@@ -97,7 +97,8 @@ export class IndexedDBAppClient implements AppClient {
       await this.insert(card);
     }
 
-    await this.sendLocalCards();
+    // this is async but we don't need to wait for it even if it fails
+    this.sendLocalCards();
   }
 
   public subscribe() {} // eslint-disable-line @typescript-eslint/no-empty-function
@@ -145,6 +146,7 @@ export class IndexedDBAppClient implements AppClient {
       // card meta
       id: meta.id,
       revision: meta.revision || uniqueId(),
+      ...(meta.prev_revision ? { prev_revision: meta.prev_revision } : {}),
       created_at: meta.created_at || new Date(),
       latest: meta.latest === undefined ? 1 : meta.latest,
       deleted: meta.deleted === undefined ? 0 : meta.deleted,
