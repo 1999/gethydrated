@@ -40,14 +40,20 @@ async function main() {
 
   app.post('/sync', jsonBodyParser({ limit: '4Mb' }), async (req, res) => {
     for (const card of req.body.cards) {
-      await Card.create({
-        card_id: card.id,
-        revision: card.revision,
-        prev_revision: '', // TODO
-        created_at: card.created_at,
-        deleted: card.deleted,
-        title: card.title,
-        data: card, // TODO
+      await Card.findOrCreate({
+        where: {
+          card_id: card.id,
+          revision: card.revision,
+        },
+        defaults: {
+          card_id: card.id,
+          revision: card.revision,
+          prev_revision: '', // TODO
+          created_at: card.created_at,
+          deleted: card.deleted,
+          title: card.title,
+          data: card, // TODO
+        },
       });
     }
 
