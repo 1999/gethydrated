@@ -28,6 +28,22 @@ function main() {
       cacheName: 'static-resources',
     }),
   );
+
+  const queue = new workbox.backgroundSync.Queue('sync-queue');
+  self.addEventListener('fetch', (evt: FetchEvent) => {
+    // Clone the request to ensure it's safe to read when
+    // adding to the Queue.
+    const request = evt.request.clone();
+    const promiseChain = fetch(request).catch(() => {
+      queue.pushRequest({
+        request,
+        metadata: null,
+        timestamp: Date.now(),
+      });
+    });
+
+    evt.waitUntil(promiseChain);
+  });
 }
 
 main();
