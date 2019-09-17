@@ -1,6 +1,6 @@
 const { resolve: resolvePath } = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 const context = resolvePath(`${__dirname}/../`);
 
@@ -34,9 +34,9 @@ module.exports = {
   // },
   devtool: 'cheap-module-eval-source-map',
   plugins: [
-    new BundleAnalyzerPlugin({
-      analyzerMode: 'static',
-      openAnalyzer: false,
-    }),
+    // new BundleAnalyzerPlugin({
+    //   analyzerMode: 'static',
+    //   openAnalyzer: false,
+    // }),
   ]
 };

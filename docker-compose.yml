@@ -1,39 +1,25 @@
 version: "3.7"
 services:
   frontend:
-    image: node:12-alpine
+    build: ./frontend
     ports:
      - "8081:80"
-    volumes:
-     - ./frontend:/var/service
-     - ./tsconfig.json:/var/tsconfig.json
-    working_dir: /var/service
-    command: npm run dev
     depends_on:
       - bff
       - api
   bff:
-    image: node:12-alpine
+    build: ./backend-for-frontend
+    command: npm run dev
     ports:
      - "8080:80"
-    volumes:
-     - ./backend-for-frontend:/var/service
-     - ./tsconfig.json:/var/tsconfig.json
-    working_dir: /var/service
-    command: npm run dev
   api:
-    image: node:12-alpine
+    build: ./api
+    command: sh -c '/var/service/wait-for.sh db:5432 -- npm run dev'
     ports:
       - "8082:80"
-    volumes:
-      - ./api:/var/service
-      - ./tsconfig.json:/var/tsconfig.json
-      - ./wait-for.sh:/root/wait-for.sh
     depends_on:
       - db
       - queue
-    working_dir: /var/service
-    command: sh -c '/root/wait-for.sh db:5432 -- npm run dev'
   db:
     image: postgres:12-alpine
     environment:

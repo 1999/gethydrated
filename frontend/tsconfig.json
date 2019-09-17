@@ -1,6 +1,17 @@
 {
-  "extends": "../tsconfig.json",
   "compilerOptions": {
+    // shared options
+    "alwaysStrict": true,
+    "esModuleInterop": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+
+    // custom options
     "lib": [
       "dom",
       "webworker",
@@ -11,5 +22,11 @@
     "jsx": "react",
     "sourceMap": true,
     "target": "esnext"
-  }
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

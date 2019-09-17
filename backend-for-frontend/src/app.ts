@@ -44,3 +44,8 @@ app.get('/manifest.json', renderPWAManifest);
 app.listen(80, () => {
   logger.info('App is listening to incoming connections on port 80');
 });
+
+process.on('unhandledRejection', (err) => {
+  logger.fatal('Asynchronous action failed', { err });
+  process.exit(1);
+});

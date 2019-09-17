@@ -47,4 +47,9 @@ async function main() {
   });
 }
 
+process.on('unhandledRejection', (err) => {
+  logger.fatal('Asynchronous action failed', { err });
+  process.exit(1);
+});
+
 main();
