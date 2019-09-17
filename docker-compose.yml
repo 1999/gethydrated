@@ -31,6 +31,7 @@ services:
       - ./wait-for.sh:/root/wait-for.sh
     depends_on:
       - db
+      - queue
     working_dir: /var/service
     command: sh -c '/root/wait-for.sh db:5432 -- npm run dev'
   db:
@@ -44,5 +45,7 @@ services:
       retries: 3
     volumes:
       - ./db-data:/var/lib/postgresql/data
+  queue:
+    image: softwaremill/elasticmq:0.14.12
 volumes:
   db-data:
