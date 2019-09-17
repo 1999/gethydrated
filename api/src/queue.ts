@@ -1,5 +1,6 @@
 import AWS from 'aws-sdk';
 import config from './config';
+import { Card } from './database';
 
 export const listenQueueChanges = async (sqs: AWS.SQS): Promise<void> => {
   const poll = async (): Promise<AWS.SQS.Message[]> => {
@@ -7,32 +8,38 @@ export const listenQueueChanges = async (sqs: AWS.SQS): Promise<void> => {
     return data.Messages || [];
   };
 
-  console.log('run polling...');
-
   while (true) {
     const messages = await poll();
-    console.log(messages);
+
+    for (const message of messages) {
+      if (!message.Body) {
+        continue;
+      }
+
+      // TODO dead letter queue?
+      const card = JSON.parse(message.Body);
+
+      await Card.findOrCreate({
+        where: {
+          card_id: card.id,
+          revision: card.revision,
+        },
+        defaults: {
+          card_id: card.id,
+          revision: card.revision,
+          prev_revision: '', // TODO
+          created_at: card.created_at,
+          deleted: card.deleted,
+          title: card.title,
+          data: card, // TODO
+        },
+      });
+    }
   }
 };
 
 export const putIntoQueue = async (sqs: AWS.SQS, cards: any): Promise<void> => {
   for (const card of cards) {
-    // await Card.findOrCreate({
-    //   where: {
-    //     card_id: card.id,
-    //     revision: card.revision,
-    //   },
-    //   defaults: {
-    //     card_id: card.id,
-    //     revision: card.revision,
-    //     prev_revision: '', // TODO
-    //     created_at: card.created_at,
-    //     deleted: card.deleted,
-    //     title: card.title,
-    //     data: card, // TODO
-    //   },
-    // });
-
     sqs.sendMessage({
       MessageBody: JSON.stringify(card),
       QueueUrl: config.sqs.queueUrl,
