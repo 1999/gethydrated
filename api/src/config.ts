@@ -1,19 +1,12 @@
-const sqsEndpoint = process.env.SQS_ENDPOINT || 'http://queue:9324';
-const sqsQueueName = process.env.SQS_QUEUE_NAME || 'default';
-
 const config = {
-  sqs: {
-    connection: {
-      apiVersion: '2012-11-05',
-      endpoint: sqsEndpoint,
-      region: 'localhost',
-      accessKeyId: 'DUMMY-accessId',
-      secretAccessKey: 'DUMMY-accessKey',
-      // logger: logger,
-    },
-    queueName: sqsQueueName,
-    queueUrl: `${sqsEndpoint}/queue/${sqsQueueName}`,
+  database: {
+    host: process.env.DATABASE_HOST || 'db',
+    dbName: 'cards',
+    port: process.env.DATABASE_PORT || 5432,
+    user: process.env.DATABASE_USER || process.env.USER || '',
+    password: process.env.DATABASE_PASSWORD || '',
   },
+  port: process.env.PORT || 80
 };
 
 export default config;

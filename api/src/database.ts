@@ -1,7 +1,8 @@
 import { Sequelize, default as SequalizeBase } from 'sequelize';
+import config from './config';
 
 // const dbLogger = logger.child({ module: 'orm' });
-const sequelize = new Sequelize('postgres://postgres:postgres@db:5432/cards');
+const sequelize = new Sequelize(`postgres://${config.database.user}:${config.database.password}@${config.database.host}:${config.database.port}/${config.database.dbName}`);
 
 export class Card extends SequalizeBase.Model {}
 Card.init({

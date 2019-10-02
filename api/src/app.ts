@@ -1,28 +1,16 @@
 import express from 'express';
 import pino from 'pino';
-import AWS from 'aws-sdk';
 import { json as jsonBodyParser } from 'body-parser';
 import cors from 'cors';
 
 import config from './config';
-import syncDatabaseModels from './database';
-import { assertQueueExists, putIntoQueue, listenQueueChanges } from './queue';
+import syncDatabaseModels, { Card } from './database';
 
 const logger = pino();
 const app = express();
 
-const sqs = new AWS.SQS({
-  ...config.sqs.connection,
-  // logger: ...
-});
-
 async function main() {
-  await Promise.all([
-    syncDatabaseModels(),
-    assertQueueExists(sqs),
-  ]);
-
-  listenQueueChanges(sqs);
+  await syncDatabaseModels();
 
   app.use(cors({ origin: true, credentials: true }));
   app.post('/sync', jsonBodyParser({ limit: '4Mb' }), async (req, res, next) => {
@@ -35,15 +23,32 @@ async function main() {
     // TODO is there existing card with this [id, revision]? yes - looks like a merge conflict
 
     try {
-      await putIntoQueue(sqs, req.body.cards);
+      for (const card of req.body.cards) {
+        await Card.findOrCreate({
+          where: {
+            card_id: card.id,
+            revision: card.revision,
+          },
+          defaults: {
+            card_id: card.id,
+            revision: card.revision,
+            prev_revision: '', // TODO
+            created_at: card.created_at,
+            deleted: card.deleted,
+            title: card.title,
+            data: card, // TODO
+          },
+        });
+      }
+
       res.sendStatus(202);
     } catch (err) {
       next(err);
     }
   });
 
-  app.listen(80, () => {
-    logger.info(`App is listening to incoming connections on port 80`);
+  app.listen(config.port, () => {
+    logger.info(`App is listening to incoming connections on port ${config.port}`);
   });
 }
 

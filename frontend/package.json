@@ -8,7 +8,8 @@
     "dev": "http-server -p 80 --cors dist/",
     "lint": "eslint -c .eslintrc.js --ext .ts src/",
     "storybook": "start-storybook -c src/.storybook",
-    "test": "mocha --require ts-node/register src/**/*.spec.ts"
+    "test": "mocha --require ts-node/register src/**/*.spec.ts",
+    "watch": "npm run build -- --watch & http-server -p 8081 --cors dist/"
   },
   "author": "Dmitrii Sorin <info@staypositive.ru>",
   "license": "UNLICENSED",

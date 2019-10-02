@@ -19,7 +19,6 @@ services:
       - "8082:80"
     depends_on:
       - db
-      - queue
   db:
     image: postgres:12-alpine
     environment:
@@ -31,7 +30,5 @@ services:
       retries: 3
     volumes:
       - ./db-data:/var/lib/postgresql/data
-  queue:
-    image: softwaremill/elasticmq:0.14.12
 volumes:
   db-data:
