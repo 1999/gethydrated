@@ -8,10 +8,7 @@
     "dev": "npm start | pino-pretty",
     "lint": "eslint -c .eslintrc.js --ext .ts src/",
     "start": "node dist/app.js",
-    "watch": "docker run -e POSTGRES_DB=cards -p ${npm_package_config_database_port} postgres & PORT=8082 DATABASE_HOST=localhost ts-node src/app.ts | pino-pretty"
-  },
-  "config": {
-    "database_port": 5432
+    "watch": "PORT=8082 DATABASE_HOST=localhost ts-node src/app.ts | pino-pretty"
   },
   "author": "Dmitrii Sorin <info@staypositive.ru>",
   "license": "UNLICENSED",

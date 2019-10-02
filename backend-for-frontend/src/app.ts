@@ -23,7 +23,7 @@ const renderEmptyHTML: RequestHandler = async (_, res) => {
 
 const proxyServiceWorker: RequestHandler = (_, res) => {
   // TODO use process.env
-  stream(`http://frontend/assets/build.service-worker.js`, {
+  stream(`${config.static.host}/assets/build.service-worker.js`, {
     headers: {
       'user-agent': `${appName}/${appVersion} (proxying service worker request)`,
     },
@@ -46,6 +46,6 @@ app.listen(config.port, () => {
 });
 
 process.on('unhandledRejection', (err) => {
-  logger.fatal('Asynchronous action failed', { err });
+  logger.fatal(`Asynchronous action failed: ${err}`, { err });
   process.exit(1);
 });
