@@ -6,6 +6,7 @@ const config = {
     user: process.env.DATABASE_USER || process.env.USER || '',
     password: process.env.DATABASE_PASSWORD || '',
   },
+  logLevel: process.env.LOGLEVEL || 'info',
   port: process.env.PORT || 80
 };
 

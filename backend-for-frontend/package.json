@@ -9,7 +9,7 @@
     "lint": "eslint -c .eslintrc.js --ext .ts src/",
     "start": "node dist/src/app.js",
     "test": "mocha --require ts-node/register src/**/*.spec.ts",
-    "watch": "PORT=1999 ts-node src/app.ts | pino-pretty"
+    "watch": "PORT=1999 LOGLEVEL=debug ts-node src/app.ts | pino-pretty"
   },
   "author": "Dmitrii Sorin <info@staypositive.ru>",
   "license": "UNLICENSED",

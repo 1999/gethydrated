@@ -8,7 +8,7 @@ import { name as appName, version as appVersion } from '../package.json';
 import pwaManifest from './manifest.json';
 
 const app = express();
-const logger = pino();
+const logger = pino({ level: config.logLevel });
 
 const emptyHTMLFilePath = resolvePath(`${__dirname}/../templates/index.html`);
 const skeleton = promises.readFile(emptyHTMLFilePath);

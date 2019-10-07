@@ -4,48 +4,29 @@ import { json as jsonBodyParser } from 'body-parser';
 import cors from 'cors';
 
 import config from './config';
-import syncDatabaseModels, { Card } from './database';
+import { insertCards, syncModels as syncDatabaseModels } from './database';
+import { asyncHandler } from './express-async-handler';
+import { sanitiseIncomingCards } from './card';
 
-const logger = pino();
+const logger = pino({ level: config.logLevel });
 const app = express();
 
 async function main() {
-  await syncDatabaseModels();
+  await syncDatabaseModels(logger);
 
   app.use(cors({ origin: true, credentials: true }));
-  app.post('/sync', jsonBodyParser({ limit: '4Mb' }), async (req, res, next) => {
-    // TODO validate incoming cards structure
-    // TODO sanitise incoming cards data (only use known props)
+  app.post('/sync', jsonBodyParser({ limit: '4Mb' }), asyncHandler(async (req, res) => {
+    const cards = sanitiseIncomingCards(req.body.cards);
+
     // TODO group imcoming cards by id
     // TODO sort incoming cards by revision
     // TODO insert: if id doesn't exist - store
     // TODO insert: if [id, revision] exists ignore
     // TODO is there existing card with this [id, revision]? yes - looks like a merge conflict
 
-    try {
-      for (const card of req.body.cards) {
-        await Card.findOrCreate({
-          where: {
-            card_id: card.id,
-            revision: card.revision,
-          },
-          defaults: {
-            card_id: card.id,
-            revision: card.revision,
-            prev_revision: '', // TODO
-            created_at: card.created_at,
-            deleted: card.deleted,
-            title: card.title,
-            data: card, // TODO
-          },
-        });
-      }
-
-      res.sendStatus(202);
-    } catch (err) {
-      next(err);
-    }
-  });
+    await insertCards(cards);
+    res.sendStatus(202);
+  }));
 
   app.listen(config.port, () => {
     logger.info(`App is listening to incoming connections on port ${config.port}`);
