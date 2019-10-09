@@ -1,3 +1,5 @@
+import LinkedList from 'yallist';
+
 export type Card = {
   id: string;
   revision: string;
@@ -15,6 +17,8 @@ export type Card = {
     tags?: string[];
   };
 };
+
+export type CardGroups = { [id: string]: Card[] };
 
 type AssertionCheck = (value: any) => boolean;
 
@@ -40,6 +44,26 @@ const assertValid = (card: any, field: string, check: AssertionCheck): void => {
   if (!check(card[field])) {
     throw new Error(`Invalid ${field} field value: does not pass ${check.name} check`);
   }
+};
+
+const findCardWithPreviousRevision = (cards: Set<Card>, revision: string): Card | null => {
+  for (const card of cards) {
+    if (card.meta.prevRevision === revision) {
+      return card;
+    }
+  }
+
+  return null;
+};
+
+const findCardWithRevision = (cards: Set<Card>, prevRevision?: string): Card | null => {
+  for (const card of cards) {
+    if (card.revision === prevRevision) {
+      return card;
+    }
+  }
+
+  return null;
 };
 
 /**
@@ -84,4 +108,52 @@ export const sanitiseIncomingCards = (cards: any): Card[] => {
       },
     };
   });
+};
+
+export const groupCards = (cards: Card[]): CardGroups => {
+  const output: CardGroups = {};
+  const groups: { [id: string]: Set<Card> } = {};
+
+  // group cards by ID
+  for (const card of cards) {
+    groups[card.id] = groups[card.id] || new Set<Card>();
+    groups[card.id].add(card);
+  }
+
+  // sort same ID cards
+  for (const id of Object.keys(groups)) {
+    const cardsSet = groups[id];
+    const list = new LinkedList<Card>();
+
+    while (cardsSet.size) {
+      if (list.tail && list.head) {
+        const nextCard = findCardWithPreviousRevision(cardsSet, list.tail.value.revision);
+        if (nextCard) {
+          cardsSet.delete(nextCard);
+          list.push(nextCard);
+
+          continue;
+        }
+
+        const prevCard = findCardWithRevision(cardsSet, list.head.value.meta.prevRevision);
+        if (prevCard) {
+          cardsSet.delete(prevCard);
+          list.unshift(prevCard);
+
+          continue;
+        }
+
+        throw new Error('Unexpected hanging card found');
+      } else {
+        const firstElement = [...cardsSet.values()][0];
+
+        list.push(firstElement);
+        cardsSet.delete(firstElement);
+      }
+    }
+
+    output[id] = list.toArray();
+  }
+
+  return output;
 };

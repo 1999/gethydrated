@@ -6,7 +6,7 @@ import cors from 'cors';
 import config from './config';
 import { insertCards, syncModels as syncDatabaseModels } from './database';
 import { asyncHandler } from './express-async-handler';
-import { sanitiseIncomingCards } from './card';
+import { sanitiseIncomingCards, groupCards } from './card';
 
 const logger = pino({ level: config.logLevel });
 const app = express();
@@ -15,16 +15,17 @@ async function main() {
   await syncDatabaseModels(logger);
 
   app.use(cors({ origin: true, credentials: true }));
+  // TODO prevent simultanuous
+
   app.post('/sync', jsonBodyParser({ limit: '4Mb' }), asyncHandler(async (req, res) => {
     const cards = sanitiseIncomingCards(req.body.cards);
+    const cardGroups = groupCards(cards);
 
-    // TODO group imcoming cards by id
-    // TODO sort incoming cards by revision
     // TODO insert: if id doesn't exist - store
     // TODO insert: if [id, revision] exists ignore
     // TODO is there existing card with this [id, revision]? yes - looks like a merge conflict
 
-    await insertCards(cards);
+    await insertCards(cardGroups);
     res.sendStatus(202);
   }));
 
