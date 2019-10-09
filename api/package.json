@@ -8,7 +8,7 @@
     "dev": "npm start | pino-pretty",
     "lint": "eslint -c .eslintrc.js --ext .ts src/",
     "start": "node dist/app.js",
-    "watch": "PORT=8082 DATABASE_HOST=localhost LOGLEVEL=debug ts-node src/app.ts | pino-pretty"
+    "watch": "ts-node src/app.ts | pino-pretty"
   },
   "author": "Dmitrii Sorin <info@staypositive.ru>",
   "license": "UNLICENSED",
