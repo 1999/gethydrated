@@ -4,28 +4,26 @@ import { json as jsonBodyParser } from 'body-parser';
 import cors from 'cors';
 
 import config from './config';
-import { insertCards, syncModels as syncDatabaseModels } from './database';
 import { asyncHandler } from './express-async-handler';
 import { sanitiseIncomingCards, groupCards } from './card';
+import { InMemoryQueue } from './queue/in-memory';
+import { PostgresDatabase } from './database/postgres';
 
 const logger = pino({ level: config.logLevel });
 const app = express();
 
 async function main() {
-  await syncDatabaseModels(logger);
+  const database = await PostgresDatabase.initialise(logger);
+  const queue = new InMemoryQueue(database);
 
-  app.use(cors({ origin: true, credentials: true }));
-  // TODO prevent simultanuous
+  const allowCors = cors({ origin: true, credentials: true });
+  app.use(allowCors);
 
   app.post('/sync', jsonBodyParser({ limit: '4Mb' }), asyncHandler(async (req, res) => {
     const cards = sanitiseIncomingCards(req.body.cards);
     const cardGroups = groupCards(cards);
+    await queue.addCards(cardGroups);
 
-    // TODO insert: if id doesn't exist - store
-    // TODO insert: if [id, revision] exists ignore
-    // TODO is there existing card with this [id, revision]? yes - looks like a merge conflict
-
-    await insertCards(cardGroups);
     res.sendStatus(202);
   }));
 
