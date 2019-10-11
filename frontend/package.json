@@ -6,7 +6,6 @@
   "scripts": {
     "build": "webpack --config build/webpack.config.js",
     "dev": "http-server -p 80 --cors dist/",
-    "lint": "eslint -c .eslintrc.js --ext .ts src/",
     "storybook": "start-storybook -c src/.storybook",
     "test": "mocha --require ts-node/register src/**/*.spec.ts",
     "watch": "npm run build -- --watch & http-server -p 8081 --cors dist/"
@@ -37,27 +36,16 @@
     "@types/uuid": "^3.4.5",
     "@types/webpack": "^4.39.2",
     "@types/workbox-sw": "^4.2.0",
-    "@typescript-eslint/eslint-plugin": "^2.3.2",
-    "@typescript-eslint/parser": "^2.3.2",
     "babel-loader": "^8.0.6",
-    "eslint": "^6.5.1",
-    "eslint-plugin-react": "^7.15.0",
-    "eslint-plugin-react-hooks": "^2.1.1",
     "expect": "^24.9.0",
     "faker": "^4.1.0",
     "http-server": "^0.11.1",
-    "husky": "^3.0.7",
     "mocha": "^6.2.1",
     "terser-webpack-plugin": "^2.1.2",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.3",
     "webpack-bundle-analyzer": "^3.5.2",
     "webpack-cli": "^3.3.9"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint"
-    }
   },
   "dependencies": {
     "react": "^16.10.1",
