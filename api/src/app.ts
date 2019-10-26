@@ -14,7 +14,7 @@ const app = express();
 
 async function main() {
   const database = await PostgresDatabase.initialise(logger);
-  const queue = new InMemoryQueue(database);
+  const queue = new InMemoryQueue(database, logger);
 
   const allowCors = cors({ origin: true, credentials: true });
   app.use(allowCors);
@@ -33,7 +33,7 @@ async function main() {
 }
 
 process.on('unhandledRejection', (err) => {
-  logger.fatal('Asynchronous action failed', { err });
+  logger.fatal('Asynchronous action failed', { err: (err as any).message });
   process.exit(1);
 });
 

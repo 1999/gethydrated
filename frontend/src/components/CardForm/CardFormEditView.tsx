@@ -46,7 +46,7 @@ const CardFormEditView: React.FunctionComponent<Props> = ({
     } catch (err) {
       console.log(err);
       if (err instanceof SaveConflictError) {
-        if (confirm('There is a new version of this card. Do you really want to save this version?')) {
+        if (confirm('There is a newer version of this card. Do you really want to save this version?')) {
           await onSave(fields, true);
         }
       } else {
