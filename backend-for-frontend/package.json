@@ -22,7 +22,7 @@
     "typescript": "^3.6.4"
   },
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "got": "^9.6.0",
     "pino": "^5.13.5"
   }
